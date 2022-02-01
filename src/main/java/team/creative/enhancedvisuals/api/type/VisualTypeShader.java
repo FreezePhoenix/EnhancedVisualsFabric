@@ -5,12 +5,12 @@ import java.io.IOException;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.enhancedvisuals.api.Visual;
 import team.creative.enhancedvisuals.api.VisualCategory;
 import team.creative.enhancedvisuals.api.VisualHandler;
@@ -24,12 +24,12 @@ public abstract class VisualTypeShader extends VisualType {
         super(name, VisualCategory.shader);
         this.location = location;
     }
-    
-    @OnlyIn(value = Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     public EnhancedPostChain postChain;
     
     @Override
-    @OnlyIn(value = Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void loadResources(ResourceManager manager) {
         Minecraft mc = Minecraft.getInstance();
         if (postChain != null)
@@ -44,13 +44,13 @@ public abstract class VisualTypeShader extends VisualType {
     }
     
     @Override
-    @OnlyIn(value = Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public int getVariantAmount() {
         return 0;
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void resize(RenderTarget buffer) {
         if (postChain != null)
             postChain.resize(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight());
@@ -65,8 +65,8 @@ public abstract class VisualTypeShader extends VisualType {
             postChain.process(partialTicks);
         }
     }
-    
-    @OnlyIn(value = Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     public abstract void changeProperties(float intensity);
     
 }

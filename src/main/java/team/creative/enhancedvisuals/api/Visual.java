@@ -4,9 +4,9 @@ import java.awt.Color;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.creativecore.common.config.premade.curve.Curve;
 import team.creative.enhancedvisuals.api.type.VisualType;
 
@@ -73,7 +73,7 @@ public class Visual {
         return type.cat;
     }
     
-    @OnlyIn(value = Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void render(PoseStack stack, TextureManager manager, int screenWidth, int screenHeight, float partialTicks) {
         type.render(handler, this, manager, screenWidth, screenHeight, partialTicks);
     }

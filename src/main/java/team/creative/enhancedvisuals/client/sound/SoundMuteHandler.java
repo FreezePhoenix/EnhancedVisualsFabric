@@ -5,22 +5,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.ChannelAccess;
 import net.minecraft.client.sounds.ChannelAccess.ChannelHandle;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import team.creative.creativecore.common.config.premade.curve.DecimalCurve;
+import team.creative.enhancedvisuals.mixin.SoundEngineAccessor;
+import team.creative.enhancedvisuals.mixin.SoundManagerAccessor;
 
-@OnlyIn(value = Dist.CLIENT)
+@Environment(EnvType.CLIENT)
 public class SoundMuteHandler {
-    
-    private static Method calculateVolumeMethod = ObfuscationReflectionHelper.findMethod(SoundEngine.class, "m_120327_", SoundInstance.class);
-    
     public static boolean isMuting = false;
     
     public static SoundEngine engine;
@@ -45,16 +43,9 @@ public class SoundMuteHandler {
     public static float getClampedVolume(float volume) {
         return volume * (isMuting ? (float) (1 - muteGraph.valueAt(timeTick)) : 1);
     }
-    
-    private static Field playingSoundsChannelField = ObfuscationReflectionHelper.findField(SoundEngine.class, "f_120226_");
-    
+
     public static Map<SoundInstance, ChannelAccess.ChannelHandle> getSounds() {
-        try {
-            return (Map<SoundInstance, ChannelHandle>) playingSoundsChannelField.get(engine);
-        } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return ((SoundEngineAccessor)engine).getInstanceToChannel();
     }
     
     public static void setMuteVolume(float muteVolume) {
@@ -62,23 +53,18 @@ public class SoundMuteHandler {
             return;
         
         getSounds().forEach((p_217926_1_, p_217926_2_) -> {
-            try {
-                float f = (float) calculateVolumeMethod.invoke(engine, p_217926_1_);
-                p_217926_2_.execute((p_217923_1_) -> {
-                    p_217923_1_.setVolume(f);
-                    
-                });
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
-            
+            float f = (float) ((SoundEngineAccessor)engine).invokeCalculateVolume(p_217926_1_);
+            p_217926_2_.execute((p_217923_1_) -> {
+                p_217923_1_.setVolume(f);
+
+            });
         });
     }
     
     public static boolean startMuting(DecimalCurve muteGraph) {
         if (engine == null) {
             manager = Minecraft.getInstance().getSoundManager();
-            engine = ObfuscationReflectionHelper.getPrivateValue(SoundManager.class, manager, "f_120349_");
+            engine = ((SoundManagerAccessor) manager).getSoundEngine();
         }
         
         if (isMuting && SoundMuteHandler.muteGraph.valueAt(timeTick) > muteGraph.valueAt(0)) {

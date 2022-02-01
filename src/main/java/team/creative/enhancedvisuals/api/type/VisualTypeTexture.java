@@ -14,11 +14,11 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat.Mode;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.creativecore.common.config.api.CreativeConfig;
 import team.creative.enhancedvisuals.EnhancedVisuals;
 import team.creative.enhancedvisuals.api.Visual;
@@ -41,14 +41,14 @@ public abstract class VisualTypeTexture extends VisualType {
     public VisualTypeTexture(VisualCategory category, String name, int animationSpeed) {
         this(category, name, null, animationSpeed);
     }
-    
-    @OnlyIn(Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     public TextureCache[] resources;
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public Dimension dimension;
     
     @Override
-    @OnlyIn(value = Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void loadResources(ResourceManager manager) {
         String baseLocation = "visuals/" + cat.name() + "/" + name + "/" + name;
         
@@ -75,12 +75,13 @@ public abstract class VisualTypeTexture extends VisualType {
     }
     
     @Override
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public int getVariantAmount() {
         return resources.length;
     }
-    
-    @OnlyIn(Dist.CLIENT)
+
+
+    @Environment(EnvType.CLIENT)
     public ResourceLocation getResource(Visual visual) {
         if (animationSpeed > 0) {
             long time = Math.abs(System.nanoTime() / 3000000 / animationSpeed);
@@ -90,7 +91,7 @@ public abstract class VisualTypeTexture extends VisualType {
     }
     
     @Override
-    @OnlyIn(value = Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     public void render(VisualHandler handler, Visual visual, TextureManager manager, int screenWidth, int screenHeight, float partialTicks) {
         RenderSystem.setShaderTexture(0, getResource(visual));
         Tesselator tessellator = Tesselator.getInstance();

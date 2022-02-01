@@ -1,24 +1,25 @@
 package team.creative.enhancedvisuals.client;
 
+import com.mojang.authlib.minecraft.client.MinecraftClient;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import team.creative.enhancedvisuals.EnhancedVisuals;
 import team.creative.enhancedvisuals.api.type.VisualType;
 import team.creative.enhancedvisuals.client.render.EVRenderer;
 
-@OnlyIn(value = Dist.CLIENT)
 public class EVClient {
     
     private static Minecraft mc = Minecraft.getInstance();
     
-    public static void init(FMLClientSetupEvent event) {
+    public static void init(Minecraft client) {
         ReloadableResourceManager reloadableResourceManager = (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
         
         reloadableResourceManager.registerReloadListener(new SimplePreparableReloadListener() {
@@ -38,8 +39,6 @@ public class EVClient {
         ResourceManager manager = mc.getResourceManager();
         for (VisualType type : VisualType.getTypes())
             type.loadResources(manager);
-        
-        MinecraftForge.EVENT_BUS.register(EVRenderer.class);
     }
     
     public static boolean shouldRender() {

@@ -1,12 +1,14 @@
 package team.creative.enhancedvisuals.common.packet;
 
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import team.creative.creativecore.common.network.CanBeNull;
 import team.creative.creativecore.common.network.CreativePacket;
 import team.creative.enhancedvisuals.common.handler.VisualHandlers;
@@ -23,10 +25,10 @@ public class DamagePacket extends CreativePacket {
     public boolean fire;
     public String source;
     
-    public DamagePacket(LivingDamageEvent event) {
-        this.damage = event.getAmount();
-        Entity attacker = event.getSource().getDirectEntity();
-        this.fire = event.getSource().isFire();
+    public DamagePacket(Player target, DamageSource source, float damage) {
+        this.damage = damage;
+        Entity attacker = source.getDirectEntity();
+        this.fire = source.isFire();
         if (attacker instanceof LivingEntity || attacker instanceof Arrow) {
             attackerClass = attacker.getClass().getName().toLowerCase();
             this.source = "attacker";
@@ -35,7 +37,7 @@ public class DamagePacket extends CreativePacket {
                 stack = ((LivingEntity) attacker).getMainHandItem();
             
         } else
-            this.source = event.getSource().msgId;
+            this.source = source.msgId;
     }
     
     public DamagePacket() {

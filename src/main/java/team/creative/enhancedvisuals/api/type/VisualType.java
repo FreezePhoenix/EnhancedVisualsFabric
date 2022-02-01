@@ -8,10 +8,10 @@ import java.util.Random;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import team.creative.creativecore.common.config.api.CreativeConfig;
 import team.creative.creativecore.common.config.api.ICreativeConfig;
 import team.creative.enhancedvisuals.api.Visual;
@@ -53,19 +53,19 @@ public abstract class VisualType implements ICreativeConfig {
     public boolean isAffectedByWater() {
         return cat.isAffectedByWater() && isEffectedByWater;
     }
-    
-    @OnlyIn(Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     public abstract void loadResources(ResourceManager manager);
-    
-    @OnlyIn(Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     public abstract void render(VisualHandler handler, Visual visual, TextureManager manager, int screenWidth, int screenHeight, float partialTicks);
     
     @Override
-    public void configured(Dist side) {
+    public void configured(EnvType side) {
         
     }
-    
-    @OnlyIn(Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     public int getVariantAmount() {
         return 1;
     }
@@ -73,8 +73,8 @@ public abstract class VisualType implements ICreativeConfig {
     public Color getColor() {
         return null;
     }
-    
-    @OnlyIn(Dist.CLIENT)
+
+    @Environment(EnvType.CLIENT)
     public void resize(RenderTarget buffer) {
         
     }
